@@ -4,10 +4,10 @@ Given a 2D binary matrix filled with 0's and 1's, find the largest rectangle con
 And what are the time complexity and space complexity of your answer?
 
 Our approach:
-1. For each row i, for each column j, we compute heights[i][j], the number of consecutive 1's above matrix[i][j]
+1. For each row i, for each column j, we compute (and update) heights[j], the number of consecutive 1's above matrix[i][j]
 (i.e. in the column j, starting from row i (including i) and going upwards)
 2. for each row i, we compute the maximum area rectangle that has its lower side contained in row i, using the
-height array heights[i][:] ; it is equivalent to looking for the largest rectangle that fits under the "curve" of the
+height array heights[:] ; it is equivalent to looking for the largest rectangle that fits under the "curve" of the
 height array
 3. the maximum area rectangle is the maximum area computed in step 2
 
@@ -36,9 +36,9 @@ def max_ones_rectangle_area(matrix):
     if n_rows == 0:
         return 0, 0, 0, 0, 0
     n_cols = len(matrix[0])
-    # heights is a 2d array, of the size of matrix
-    # we want to iterate from the top row to the bottom row of matrix so that for all valid i,j,
-    # heights[i][j] contains the number of consecutive 1's above (and including) matrix[i][j]
+    # heights is a 1d array, of length equal to a row of matrix
+    # we want to iterate from the top row to the bottom row of matrix so that when visiting a row i, for all columns j,
+    # heights[j] contains the number of consecutive 1's above (and including) matrix[i][j]
     heights = [0] * n_cols
 
     # initializing the first row of 2D array heights

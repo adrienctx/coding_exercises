@@ -32,40 +32,40 @@ def max_ones_rectangle_area(matrix):
     """
 
     n_rows = len(matrix)
+
     if n_rows == 0:
         return 0, 0, 0, 0, 0
     n_cols = len(matrix[0])
     # heights is a 2d array, of the size of matrix
     # we want to iterate from the top row to the bottom row of matrix so that for all valid i,j,
     # heights[i][j] contains the number of consecutive 1's above (and including) matrix[i][j]
-    heights = [[0] * n_cols] * n_rows
-
-    # for clarity we keep the whole matrix;
-    # if memory is an issue we can only keep 2 rows of the matrix heights[][], because we compute the values of interest
-    # on the fly (see below)
+    heights = [0] * n_cols
 
     # initializing the first row of 2D array heights
     for j in range(n_cols):
-        heights[0][j] = matrix[0][j]
+        heights[j] = matrix[0][j]
     # initializing the returned values (i.e. "rectangles" with all 1's that fit in the top row)
-    max_area, start_col_idx, width, height = get_largest_rect_under_curve(heights[0][:])
-    start_row_idx = 0
+    max_area, max_area_start_col_index, max_area_width, max_area_height = get_largest_rect_under_curve(heights)
+    max_area_start_row_idx = 0
 
     # for each row after the first one (if any), the heights are incremented by 1 if we find a 1, reset to 0 otherwise
     for i in range(1, n_rows):
         for j in range(n_cols):
             if matrix[i][j] == 0:
-                heights[i][j] == 0
+                heights[j] = 0
             else:
-                heights[i][j] = heights[i-1][j] + 1
+                heights[j] += 1
         # update the max area by comparing it to the one that can be found from the current row
-        area, start_col_idx, width, height = get_largest_rect_under_curve(heights[0][:])
+        area, start_col_idx, width, height = get_largest_rect_under_curve(heights)
         # if the newly found area is larger than the largest found before, update the result
         if area > max_area:
             max_area = area
-            start_row_idx = i
+            max_area_start_row_idx = i
+            max_area_width = width
+            max_area_height = height
+            max_area_start_col_index = start_col_idx
 
-    return max_area, start_row_idx, start_col_idx, width, height
+    return max_area, max_area_start_row_idx, max_area_start_col_index, max_area_width, max_area_height
 
 
 def get_largest_rect_under_curve(heights_row):
@@ -108,10 +108,10 @@ def get_largest_rect_under_curve(heights_row):
     # The last element of this array is the starting index of the "youngest" alive rectangle (so, also the tallest).
     alive_rect_idx = []
     max_area = 0
+    max_area_start_index = 0
     #   Adding some informative variables, in case we decide later we also want to know where is the largest rectangle
-    start_idx = 0
-    width = 0
-    height = 0
+    max_area_width = 0
+    max_area_height = 0
 
     for i in range(len(heights_row)):
         if len(alive_rect_idx) == 0:  # if there are no alive rectangles, any non 0 height starts a rectangle
@@ -124,14 +124,16 @@ def get_largest_rect_under_curve(heights_row):
                 width = i - alive_rect_idx[-1]
                 height = heights_row[alive_rect_idx[-1]]
                 area = width * height
+                # then actually remove it from the pile
+                start_idx = alive_rect_idx.pop()
                 # and check if it's the new largest area
                 if area > max_area:
                     max_area = area
-                # then actually remove it from the pile
-                start_idx = alive_rect_idx.pop()
+                    max_area_start_index = start_idx
+                    max_area_width = width
+                    max_area_height = height
 
             # now, check if we should start a new alive rectangle
-            if heights_row[i] > heights_row[alive_rect_idx[-1]]:
+            if len(alive_rect_idx)==0 or heights_row[i] > heights_row[alive_rect_idx[-1]]:
                 alive_rect_idx.append(i)
-
-    return max_area, start_idx, width, height
+    return max_area, max_area_start_index, max_area_width, max_area_height

@@ -8,7 +8,7 @@ def main():
     """
     Here are some simple test cases to experiment with the scripts
     """
-    matrix = [[0, 1, 1, 1], [1, 1, 1, 0], [0, 1, 1, 1]]
+    matrix = [[0, 1, 1, 1], [1, 1, 1, 0], [0, 0, 1, 1], [1, 1, 1, 0, ], [1, 1, 0, 1], [1, 1, 1, 1], [0, 1, 0, 1]]
     max_area, start_row_idx, start_col_idx, length, height = max_ones_rectangle_area(matrix)
     print('matrix is ')
     print(matrix)
